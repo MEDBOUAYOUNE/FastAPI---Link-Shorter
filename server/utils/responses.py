@@ -1,23 +1,23 @@
 
+import code
 from fastapi.responses import JSONResponse
 
 
-def success_response(message: str = "success", data: dict = None, status_code: int = 200) -> JSONResponse:
+def success_response(status: str = "success", message: str = None, data: dict = None, status_code: int = 200) -> JSONResponse:
     return JSONResponse(
         content={
-            "status": "success",
+            "status": status,
             "message": message,
             "data": data
         },
         status_code=status_code
     )
 
-def error_response(message: str = "error", code: int = 400) -> JSONResponse:
+def error_response(status: str = "error", message: str = None, status_code: int = 400) -> JSONResponse:
     return JSONResponse(
         content={
-            "status": "error",
+            "status": status,
             "message": message,
-            "code": code
         },
-        status_code=code
+        status_code=status_code
     )
