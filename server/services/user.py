@@ -84,6 +84,34 @@ async def login_service(user: UserLogin, db: Session):
             status_code=500
         )
 
+async def user_service(user_id : str, db: Session):
+    try:
+        _user = db.query(User).filter(User.id == user_id).first()
+        if not _user:
+            return error_response(
+                status="error",
+                message="User not found",
+                status_code=404
+            )
+        user_data = {
+            "id": str(_user.id),
+            "email": _user.email,
+            "full_name": _user.full_name,
+            "created_at": _user.created_at.isoformat()
+        }
+        return success_response(
+            status="success",
+            data={"user": user_data},
+            message="User retrieved successfully",
+            status_code=200
+        )
+    except Exception as e:
+        return error_response(
+            status="error",
+            message=str(e),
+            status_code=500
+        )
+    
 async def refresh_token_service(request: Request):
     try:
         refresh_token = request.cookies.get("refresh_token")
