@@ -1,5 +1,5 @@
 from fastapi import Depends, HTTPException, Request
-from app.db import Session, get_db
+# from app.db import Session, get_db
 from utils.jwt import verify_token
 
 async def is_authenticated_user(request: Request) -> str:

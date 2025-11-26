@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Request
 
 from schemas.user import UserCreate, UserLogin
 from app.db import get_db, Session
-import utils.dependencies as is_authenticated_user
+from utils.dependencies import is_authenticated_user
 from services.user import register_service, login_service, user_service, refresh_token_service
 
 router = APIRouter(prefix="/user", tags=["users"])
