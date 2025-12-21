@@ -21,3 +21,5 @@ REDIS_PASSWORD = os.getenv("REDIS_PASSWORD", None)
 
 JWT_SECRET = os.getenv("JWT_SECRET")
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+
+BASE_URL = os.getenv("BASE_URL", "http://localhost:8000")

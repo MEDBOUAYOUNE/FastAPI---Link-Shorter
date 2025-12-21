@@ -1,6 +1,7 @@
 from datetime import datetime
 from sqlalchemy import Column, String, Boolean, DateTime
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 from cryptography.fernet import Fernet
 import uuid
 
@@ -21,6 +22,9 @@ class User(Base):
 
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     updated_at = Column(DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Relationship with Link model
+    links = relationship("Link", back_populates="user")
 
     def __repr__(self):
         return f"<User(id={self.id}, email={self.email}, is_active={self.is_active})>"
