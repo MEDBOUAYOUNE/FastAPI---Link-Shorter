@@ -8,6 +8,7 @@ from app.db import Base
 from app.settings import HASHING_SECRET
 
 
+
 class User(Base):
     __tablename__ = "users"
 

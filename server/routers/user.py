@@ -8,6 +8,7 @@ from services.user import register_service, login_service, user_service, refresh
 router = APIRouter(prefix="/user", tags=["users"])
 
 @router.post("/register")
+# email, full_name, password
 async def register_user(user: UserCreate, db: Session = Depends(get_db)):
     response = await register_service(user, db)
     return response

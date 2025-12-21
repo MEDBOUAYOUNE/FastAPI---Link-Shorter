@@ -6,6 +6,7 @@ from models.user import User
 from schemas.user import UserCreate, UserLogin
 from utils.responses import success_response, error_response
 from utils.jwt import create_jwt_tokens, refresh_access_token
+# from utils.redis import set_redis_key, get_redis_key, delete_redis_key
 
 
 
@@ -46,7 +47,6 @@ async def register_service(user: UserCreate, db: Session):
             message=str(e),
             status_code=500
         )
-
 
 async def login_service(user: UserLogin, db: Session):
     try:
