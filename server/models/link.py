@@ -2,6 +2,7 @@ from app.db import Base
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import ARRAY, UUID as PGUUID
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm.attributes import flag_modified
 from datetime import datetime
 import uuid
 
@@ -14,7 +15,7 @@ class Link(Base):
     original_url = Column(String, nullable=False)
     shortened_url = Column(String, unique=True, nullable=False)
     open_count = Column(Integer, default=0)
-    open_ips = Column(ARRAY(String), default=list)
+    open_ips = Column(ARRAY(String), default=list, server_default='{}')
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -32,7 +33,11 @@ class Link(Base):
         return f"{base_url}/{shortened_url}"
     
     def increment_open_count(self, ip_address: str):
+        print(f"Link opened: {self.shortened_url}, IP: {ip_address}")
         self.open_count += 1
+        if self.open_ips is None:
+            self.open_ips = []
         if ip_address not in self.open_ips:
             self.open_ips.append(ip_address)
-        return self.open_count
+            flag_modified(self, 'open_ips')
+        return self.open_count, self.open_ips

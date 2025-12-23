@@ -81,7 +81,6 @@ async def get_link_by_short_code_service(short_code: str, request: Request, db: 
                 status_code=404
             )
         
-        # Increment open count
         if request.client:
             link.increment_open_count(request.client.host)
             db.commit()
@@ -102,9 +101,9 @@ async def get_link_by_short_code_service(short_code: str, request: Request, db: 
             status_code=500
         )
 
-async def delete_link_service(link_id: str, user: User = Depends(is_authenticated_user), db: Session = Depends(get_db)):
+async def delete_link_service(short_code: str, user: User = Depends(is_authenticated_user), db: Session = Depends(get_db)):
     try:
-        link = db.query(Link).filter(Link.id == link_id, Link.user_id == user.id).first()
+        link = db.query(Link).filter(Link.shortened_url == short_code, Link.user_id == user.id).first()
         if not link:
             return error_response(
                 status="error",
@@ -126,9 +125,9 @@ async def delete_link_service(link_id: str, user: User = Depends(is_authenticate
             status_code=500
         )
 
-async def get_link_stats_service(link_id: str, user: User = Depends(is_authenticated_user), db: Session = Depends(get_db)):
+async def get_link_stats_service(short_code: str, user: User = Depends(is_authenticated_user), db: Session = Depends(get_db)):
     try:
-        link = db.query(Link).filter(Link.id == link_id, Link.user_id == user.id).first()
+        link = db.query(Link).filter(Link.shortened_url == short_code, Link.user_id == user.id).first()
         if not link:
             return error_response(
                 status="error",
