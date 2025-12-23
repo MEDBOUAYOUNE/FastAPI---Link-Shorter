@@ -1,4 +1,5 @@
 from fastapi import Depends, Request
+from fastapi.responses import RedirectResponse
 from app.db import Session, get_db
 from app.settings import BASE_URL
 from models.link import Link
@@ -9,7 +10,6 @@ from utils.dependencies import is_authenticated_user
 
 async def create_link_service(original_url: str, user: User = Depends(is_authenticated_user), db: Session = Depends(get_db)):
     try:
-        # Generate short code
         short_code = Link.generate_shortened_url(BASE_URL).split('/')[-1]
         
         new_link = Link(
@@ -42,34 +42,25 @@ async def create_link_service(original_url: str, user: User = Depends(is_authent
             status_code=500
         )
 
-async def get_link_service(link_id: int, request: Request, db: Session = Depends(get_db)):
-    try:
-        link = db.query(Link).filter(Link.id == link_id).first()
-        if not link:
-            return error_response(
-                status="error",
-                message="Link not found",
-                status_code=404
-            )
-        link.increment_open_count(request.client.host)
-        db.commit()
-        db.refresh(link)
-        return success_response(
-            status="success",
-            data={"link": {
-                "id": link.id,
-                "original_url": link.original_url,
-                "shortened_url": link.shortened_url,
-            }},
-            message="Link fetched successfully",
-            status_code=200
-        )
-    except Exception as e:
-        return error_response(
-            status="error",
-            message=str(e),
-            status_code=500
-        )
+# async def get_link_service(link_id: int, request: Request, db: Session = Depends(get_db)):
+#     try:
+#         link = db.query(Link).filter(Link.id == link_id).first()
+#         if not link:
+#             return error_response(
+#                 status="error",
+#                 message="Link not found",
+#                 status_code=404
+#             )
+#         link.increment_open_count(request.client.host)
+#         db.commit()
+#         db.refresh(link)
+#         return RedirectResponse(url=link.original_url)
+#     except Exception as e:
+#         return error_response(
+#             status="error",
+#             message=str(e),
+#             status_code=500
+#         )
 
 async def get_link_by_short_code_service(short_code: str, request: Request, db: Session = Depends(get_db)):
     try:
@@ -85,15 +76,7 @@ async def get_link_by_short_code_service(short_code: str, request: Request, db: 
             link.increment_open_count(request.client.host)
             db.commit()
         
-        return success_response(
-            status="success",
-            data={
-                "original_url": link.original_url,
-                "short_code": link.shortened_url
-            },
-            message="Link found",
-            status_code=200
-        )
+        return RedirectResponse(url=link.original_url)
     except Exception as e:
         return error_response(
             status="error",

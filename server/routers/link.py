@@ -2,15 +2,14 @@ from fastapi import APIRouter, Depends, Request
 from app.db import get_db, Session
 from models.user import User
 from utils.dependencies import is_authenticated_user
+from schemas.link import LinkCreate
 from services.link import create_link_service, get_link_by_short_code_service, delete_link_service, get_link_stats_service, get_link_by_short_code_service
 
 router = APIRouter(prefix="/link", tags=["links"])
 
 @router.post("/add")
-async def create_link(request: Request, db: Session = Depends(get_db), user: User = Depends(is_authenticated_user)):
-    data = await request.json()
-    original_url = data.get("original_url")
-    response = await create_link_service(original_url, user, db)
+async def create_link(link: LinkCreate, db: Session = Depends(get_db), user: User = Depends(is_authenticated_user)):
+    response = await create_link_service(str(link.original_url), user, db)
     return response
 
 @router.get("/{short_code}")
